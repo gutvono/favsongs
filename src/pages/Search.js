@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
+import searchAlbumsAPI from '../services/searchAlbumsAPI';
 
 class Search extends React.Component {
   constructor() {
@@ -8,6 +10,8 @@ class Search extends React.Component {
     this.state = {
       searchInput: '',
       validateButton: true,
+      loading: false,
+      searchResult: [],
     };
   }
 
@@ -25,13 +29,34 @@ class Search extends React.Component {
     }, this.validate);
   }
 
+  submitSearch = async (e) => {
+    e.preventDefault();
+    const { searchInput } = this.state;
+    const apiCall = await searchAlbumsAPI(searchInput);
+    console.log(searchInput);
+    console.log(apiCall);
+    this.setState({ loading: true }, () => {
+      this.setState({
+        searchResult: apiCall,
+      });
+      this.setState({ loading: false });
+    });
+  }
+
   render() {
-    const { validateButton } = this.state;
+    const { validateButton, searchResult, loading, searchInput } = this.state;
+    if (loading) {
+      return (
+        <div data-testid="page-search">
+          <Header />
+          <p>Carregando...</p>
+        </div>);
+    }
     return (
       <div data-testid="page-search">
         <Header />
         <h1>Search</h1>
-        <form>
+        <form onSubmit={ this.submitSearch }>
           <label htmlFor="searchInput">
             Procurar:
             <input
@@ -51,6 +76,21 @@ class Search extends React.Component {
           >
             Pesquisar
           </button>
+          { searchResult.length === 0
+            ? <p>Nenhum álbum foi encontrado</p>
+            : (
+              <p>
+                Resultado de álbuns de:
+                {' '}
+                {searchInput}
+              </p>) }
+          <div>
+            {searchResult.map((track) => (<Link
+              data-testid={ `link-to-album-${track.collectionId}` }
+              key={ track.collectionId }
+              to={ `/album:${track.collectionId}` }
+            />))}
+          </div>
         </form>
       </div>
     );
