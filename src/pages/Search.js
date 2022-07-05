@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import searchAlbumsAPI from '../services/searchAlbumsAPI';
+import MusicCard from '../components/MusicCard';
 
 class Search extends React.Component {
   constructor() {
@@ -33,7 +34,6 @@ class Search extends React.Component {
     e.preventDefault();
     const { searchInput } = this.state;
     const apiCall = await searchAlbumsAPI(searchInput);
-    console.log(searchInput);
     console.log(apiCall);
     this.setState({ loading: true }, () => {
       this.setState({
@@ -55,15 +55,14 @@ class Search extends React.Component {
     return (
       <div data-testid="page-search">
         <Header />
-        <h1>Search</h1>
-        <form onSubmit={ this.submitSearch }>
+        <form onSubmit={ this.submitSearch } className="searchForm">
           <label htmlFor="searchInput">
             Procurar:
             <input
               type="text"
               name="searchInput"
               id="searchInput"
-              placeholder="insira o nome da música ou artista"
+              placeholder="artista, música ou album"
               size="30"
               onChange={ this.handleChange }
               data-testid="search-artist-input"
@@ -84,12 +83,27 @@ class Search extends React.Component {
                 {' '}
                 {searchInput}
               </p>) }
-          <div>
-            {searchResult.map((track) => (<Link
-              data-testid={ `link-to-album-${track.collectionId}` }
-              key={ track.collectionId }
-              to={ `/album:${track.collectionId}` }
-            />))}
+          <div className="allTracks">
+            {searchResult
+              .map(({ collectionId, artworkUrl100, artistName, collectionName }) => (
+                <div key={ collectionId } className="everyTrack">
+                  <img
+                    src={ artworkUrl100 }
+                    alt={ `Img from ${artistName}` }
+                    className="trackImg"
+                  />
+                  <p className="trackName">
+                    {`${artistName} - ${collectionName}`}
+                  </p>
+
+                  <Link
+                    data-testid={ `link-to-album-${collectionId}` }
+                    key={ collectionId }
+                    to={ `/album/${collectionId}` }
+                  >
+                    Acessar
+                  </Link>
+                </div>))}
           </div>
         </form>
       </div>
