@@ -42,7 +42,7 @@ class Album extends React.Component {
           {album.map((obj, index) => {
             if (index === 0) {
               return (
-                <div className="album" data-testid="artist-name">
+                <div className="album" key={ index } data-testid="artist-name">
                   <img
                     src={ obj.artworkUrl100 }
                     alt={ obj.artistName }
