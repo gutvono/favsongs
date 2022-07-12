@@ -33,7 +33,6 @@ class Search extends React.Component {
     e.preventDefault();
     const { searchInput } = this.state;
     const apiCall = await searchAlbumsAPI(searchInput);
-    console.log(apiCall);
     this.setState({ loading: true }, () => {
       this.setState({
         searchResult: apiCall,
