@@ -8,7 +8,7 @@ class MusicCard extends React.Component {
 
     this.state = {
       loading: false,
-      favorites: [],
+      checked: false,
     };
   }
 
@@ -16,26 +16,29 @@ class MusicCard extends React.Component {
     this.getCheckedboxes();
   }
 
-  checkedFavs = async () => {
-    const { favorites } = this.state;
+  checkedFavs = async ({ target }) => {
     const { trackObj } = this.props;
-    this.setState({ loading: true }, () => this.getCheckedboxes());
-    if (favorites.some(({ trackId }) => trackObj.trackId === trackId)) {
-      await removeSong(trackObj);
-    } else {
+    this.setState({ loading: true });
+    if (target.checked) {
+      this.setState({ checked: true });
       await addSong(trackObj);
+    } else {
+      this.setState({ checked: false });
+      await removeSong(trackObj);
     }
     this.setState({ loading: false });
   }
 
   getCheckedboxes = async () => {
-    this.setState({
-      favorites: await getFavoriteSongs(),
-    });
+    const { trackObj } = this.props;
+    const allTracks = await getFavoriteSongs();
+    if (allTracks.some(({ trackId }) => trackId === trackObj.trackId)) {
+      this.setState({ checked: true });
+    }
   }
 
   render() {
-    const { loading, favorites } = this.state;
+    const { loading, checked } = this.state;
     const { trackObj } = this.props;
     return (
       <div className="musicPlayer">
@@ -55,7 +58,7 @@ class MusicCard extends React.Component {
             name="checkFav"
             onChange={ this.checkedFavs }
             data-testid={ `checkbox-music-${trackObj.trackId}` }
-            checked={ favorites.some(({ trackId }) => trackObj.trackId === trackId) }
+            checked={ checked }
           />
           {loading && <p className="musicPlayer">Carregando...</p>}
         </label>
