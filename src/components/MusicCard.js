@@ -25,7 +25,7 @@ class MusicCard extends React.Component {
     } else {
       this.setState({ checked: false });
       await removeSong(trackObj);
-      await attFav();
+      if (attFav) await attFav();
     }
     this.setState({ loading: false });
   }
