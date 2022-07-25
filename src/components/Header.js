@@ -25,20 +25,21 @@ class Header extends React.Component {
 
   render() {
     const { loading, user } = this.state;
-    if (loading) return <p>Carregando...</p>;
     return (
       <header data-testid="header-component">
         <h2>TrybeTunes</h2>
         <p data-testid="header-user-name">
           Bem vindo,
           {' '}
-          {user.name}
+          {loading ? <p>Carregando...</p> : <p>{user.name}</p>}
         </p>
-        <nav>
-          <Link to="/search" data-testid="link-to-search">Search </Link>
-          <Link to="/favorites" data-testid="link-to-favorites">Favorites </Link>
-          <Link to="/profile" data-testid="link-to-profile">Profile </Link>
-        </nav>
+        {loading ? <p>Carregando...</p> : (
+          <nav>
+            <Link to="/search" data-testid="link-to-search">Search </Link>
+            <Link to="/favorites" data-testid="link-to-favorites">Favorites </Link>
+            <Link to="/profile" data-testid="link-to-profile">Profile </Link>
+          </nav>
+        )}
       </header>
     );
   }
