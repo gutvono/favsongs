@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, bool, object } from 'prop-types';
+import { object, func } from 'prop-types';
 import { addSong, getFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
 
 class MusicCard extends React.Component {
@@ -17,7 +17,7 @@ class MusicCard extends React.Component {
   }
 
   checkedFavs = async ({ target }) => {
-    const { trackObj } = this.props;
+    const { trackObj, attFav } = this.props;
     this.setState({ loading: true });
     if (target.checked) {
       this.setState({ checked: true });
@@ -25,6 +25,7 @@ class MusicCard extends React.Component {
     } else {
       this.setState({ checked: false });
       await removeSong(trackObj);
+      await attFav();
     }
     this.setState({ loading: false });
   }
@@ -40,6 +41,7 @@ class MusicCard extends React.Component {
   render() {
     const { loading, checked } = this.state;
     const { trackObj } = this.props;
+    if (loading) { return <p className="musicPlayer">Carregando...</p>; }
     return (
       <div className="musicPlayer">
         <audio data-testid="audio-component" src={ trackObj.previewUrl } controls>
@@ -50,16 +52,16 @@ class MusicCard extends React.Component {
           <code>audio</code>
           .
         </audio>
-        <label htmlFor="checkFav">
+        <label htmlFor={ `fav-${trackObj.trackId}` }>
           Favorita
           <input
             type="checkbox"
-            name="checkFav"
+            name={ `fav-${trackObj.trackId}` }
+            id={ `fav-${trackObj.trackId}` }
             onChange={ this.checkedFavs }
             data-testid={ `checkbox-music-${trackObj.trackId}` }
             checked={ checked }
           />
-          {loading && <p className="musicPlayer">Carregando...</p>}
         </label>
       </div>
     );
@@ -67,10 +69,8 @@ class MusicCard extends React.Component {
 }
 
 MusicCard.propTypes = {
-  trackUrl: string,
-  trackId: string,
-  checkedTrack: bool,
   fullAlbum: object,
+  attFav: func,
 }.isRequired;
 
 export default MusicCard;

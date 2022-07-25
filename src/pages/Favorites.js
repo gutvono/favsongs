@@ -14,7 +14,7 @@ class Favorites extends React.Component {
     this.setState({ loading: false });
   }
 
-  async getFav() {
+  getFav = async () => {
     const allTracks = await getFavoriteSongs();
     this.setState({ favorites: allTracks });
   }
@@ -38,7 +38,11 @@ class Favorites extends React.Component {
                   {`${obj.trackName}`}
                 </p>
                 <div className="musicPlayer">
-                  <MusicCard trackObj={ obj } fullAlbum={ favorites } />
+                  <MusicCard
+                    trackObj={ obj }
+                    fullAlbum={ favorites }
+                    attFav={ this.getFav }
+                  />
                 </div>
               </div>
             </div>
